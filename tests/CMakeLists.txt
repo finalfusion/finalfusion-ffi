@@ -1,0 +1,5 @@
+include_directories ("${PROJECT_SOURCE_DIR}/include")
+
+add_executable(read_nonexistent_returns_null read_nonexistent_returns_null.c)
+target_link_libraries(read_nonexistent_returns_null finalfusion)
+add_test(read_nonexistent_returns_null read_nonexistent_returns_null)
