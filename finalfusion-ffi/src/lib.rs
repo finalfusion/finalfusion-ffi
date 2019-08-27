@@ -29,12 +29,12 @@ pub extern "C" fn ff_error() -> *const c_char {
 }
 
 #[no_mangle]
-pub extern "C" fn ff_read_embeddings(
+pub unsafe extern "C" fn ff_read_embeddings(
     filename: *const c_char,
 ) -> *mut Embeddings<VocabWrap, StorageWrap> {
     assert!(!filename.is_null(), "filename was a NULL pointer");
 
-    let filename = unsafe { CStr::from_ptr(filename) };
+    let filename = CStr::from_ptr(filename);
     let filename = OsStr::from_bytes(filename.to_bytes());
 
     let mut reader = match File::open(filename) {
@@ -60,10 +60,8 @@ pub extern "C" fn ff_read_embeddings(
 }
 
 #[no_mangle]
-pub extern "C" fn ff_free_embeddings(embeddings: *mut Embeddings<VocabWrap, StorageWrap>) {
+pub unsafe extern "C" fn ff_free_embeddings(embeddings: *mut Embeddings<VocabWrap, StorageWrap>) {
     if !embeddings.is_null() {
-        unsafe {
-            Box::from_raw(embeddings);
-        }
+        Box::from_raw(embeddings);
     }
 }
