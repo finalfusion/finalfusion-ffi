@@ -1,0 +1,18 @@
+dist: bionic
+addons:
+  apt:
+    packages:
+    - cmake
+matrix:
+  fast_finish: true
+  include:
+  - language: rust
+    os: linux
+    rust: 1.31.0
+  - language: rust
+    os: linux
+    rust: stable
+before_script:
+- rustup component add clippy
+- rustup component add rustfmt
+script: ci/script.sh
