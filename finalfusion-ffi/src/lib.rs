@@ -6,9 +6,15 @@ use std::fs::File;
 use std::io::BufReader;
 use std::os::raw::c_char;
 use std::os::unix::ffi::OsStrExt;
-use std::ptr;
+use std::{mem, ptr};
 
 use finalfusion::prelude::*;
+
+macro_rules! check_null(
+ ($ptr:expr) => {
+    assert!(!$ptr.is_null(), "{} was a NULL pointer.", stringify!($ptr));
+ }
+);
 
 thread_local! {
     static ERROR: RefCell<CString> = RefCell::new(CString::new(Vec::new()).unwrap());
@@ -32,7 +38,7 @@ pub extern "C" fn ff_error() -> *const c_char {
 pub unsafe extern "C" fn ff_read_embeddings(
     filename: *const c_char,
 ) -> *mut Embeddings<VocabWrap, StorageWrap> {
-    assert!(!filename.is_null(), "filename was a NULL pointer");
+    check_null!(filename);
 
     let filename = CStr::from_ptr(filename);
     let filename = OsStr::from_bytes(filename.to_bytes());
@@ -64,4 +70,36 @@ pub unsafe extern "C" fn ff_free_embeddings(embeddings: *mut Embeddings<VocabWra
     if !embeddings.is_null() {
         Box::from_raw(embeddings);
     }
+}
+
+/// Return the embedding dimensionality.
+#[no_mangle]
+pub unsafe extern "C" fn ff_embeddings_dims(
+    embeddings: *const Embeddings<VocabWrap, StorageWrap>,
+) -> usize {
+    check_null!(embeddings);
+    let embeddings = &*embeddings;
+    embeddings.storage().shape().1
+}
+
+/// Embedding Lookup.
+///
+/// Return the embedding as a float array. If no embedding was found, NULL is returned.
+#[no_mangle]
+pub unsafe extern "C" fn ff_embedding_lookup(
+    embeddings: *const Embeddings<VocabWrap, StorageWrap>,
+    word: *const c_char,
+) -> *mut f32 {
+    check_null!(embeddings);
+    check_null!(word);
+
+    let embeddings = &*embeddings;
+    let word = CStr::from_ptr(word).to_string_lossy();
+    if let Some(embedding) = embeddings.embedding(&word) {
+        let mut embedding = embedding.into_owned().into_raw_vec();
+        let ptr = embedding.as_mut_ptr();
+        mem::forget(embedding);
+        return ptr;
+    }
+    ptr::null_mut()
 }
