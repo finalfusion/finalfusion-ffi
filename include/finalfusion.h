@@ -30,4 +30,4 @@ typedef struct ff_embeddings_t *ff_embeddings;
 }
 #endif
 
-#endif // FINALFUSION_H
+#endif /* FINALFUSION_H */
