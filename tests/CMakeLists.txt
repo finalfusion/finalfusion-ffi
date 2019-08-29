@@ -1,3 +1,5 @@
+include(CTest)
+
 include_directories ("${PROJECT_SOURCE_DIR}/include")
 file(COPY testdata/test.fifu DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/data)
 

@@ -3,6 +3,7 @@ addons:
   apt:
     packages:
     - cmake
+    - valgrind
 matrix:
   fast_finish: true
   include:
