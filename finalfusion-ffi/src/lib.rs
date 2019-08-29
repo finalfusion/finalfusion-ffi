@@ -39,30 +39,15 @@ pub unsafe extern "C" fn ff_read_embeddings(
     filename: *const c_char,
 ) -> *mut Embeddings<VocabWrap, StorageWrap> {
     check_null!(filename);
+    read_embeddings(filename, false)
+}
 
-    let filename = CStr::from_ptr(filename);
-    let filename = OsStr::from_bytes(filename.to_bytes());
-
-    let mut reader = match File::open(filename) {
-        Ok(f) => BufReader::new(f),
-        Err(err) => {
-            update_error(&format!("{}", err));
-            return ptr::null_mut();
-        }
-    };
-
-    let embeddings = match Embeddings::read_embeddings(&mut reader) {
-        Ok(embeddings) => embeddings,
-        Err(err) => {
-            update_error(&format!("{}", err));
-            return ptr::null_mut();
-        }
-    };
-
-    // Ensure heap storage.
-    let boxed_embeddings = Box::new(embeddings);
-
-    Box::into_raw(boxed_embeddings)
+#[no_mangle]
+pub unsafe extern "C" fn ff_mmap_embeddings(
+    filename: *const c_char,
+) -> *mut Embeddings<VocabWrap, StorageWrap> {
+    check_null!(filename);
+    read_embeddings(filename, true)
 }
 
 #[no_mangle]
@@ -102,4 +87,37 @@ pub unsafe extern "C" fn ff_embedding_lookup(
         return ptr;
     }
     ptr::null_mut()
+}
+
+unsafe fn read_embeddings(
+    filename: *const c_char,
+    mmap: bool,
+) -> *mut Embeddings<VocabWrap, StorageWrap> {
+    let filename = CStr::from_ptr(filename);
+    let filename = OsStr::from_bytes(filename.to_bytes());
+    let mut reader = match File::open(filename) {
+        Ok(f) => BufReader::new(f),
+        Err(err) => {
+            update_error(&format!("{}", err));
+            return ptr::null_mut();
+        }
+    };
+    let embeddings = if mmap {
+        Embeddings::mmap_embeddings(&mut reader)
+    } else {
+        Embeddings::read_embeddings(&mut reader)
+    };
+
+    let embeddings = match embeddings {
+        Ok(embeddings) => embeddings,
+        Err(err) => {
+            update_error(&format!("{}", err));
+            return ptr::null_mut();
+        }
+    };
+
+    // Ensure heap storage.
+    let boxed_embeddings = Box::new(embeddings);
+
+    Box::into_raw(boxed_embeddings)
 }

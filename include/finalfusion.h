@@ -23,6 +23,12 @@ typedef struct ff_embeddings_t *ff_embeddings;
   ff_embeddings ff_read_embeddings(char const *filename);
 
   /**
+   * Mmap finalfusion embeddings. Returns a pointer to the embeddings
+   * when successful or NULL otherwise.
+   */
+  ff_embeddings ff_mmap_embeddings(char const *filename);
+
+  /**
    * Free finalfusion embeddings.
    */
   void ff_free_embeddings(ff_embeddings embeddings);

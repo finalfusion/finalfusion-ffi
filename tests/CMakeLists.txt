@@ -10,3 +10,7 @@ add_test(read_nonexistent_returns_null read_nonexistent_returns_null)
 add_executable(embedding_lookup embedding_lookup.c)
 target_link_libraries(embedding_lookup finalfusion)
 add_test(embedding_lookup embedding_lookup)
+
+add_executable(mmap_embeddings mmap_embeddings.c)
+target_link_libraries(mmap_embeddings finalfusion)
+add_test(mmap_embeddings mmap_embeddings)
