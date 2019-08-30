@@ -14,3 +14,7 @@ add_test(embedding_lookup embedding_lookup)
 add_executable(mmap_embeddings mmap_embeddings.c)
 target_link_libraries(mmap_embeddings finalfusion)
 add_test(mmap_embeddings mmap_embeddings)
+
+add_executable(cpp_embedding_lookup embedding_lookup.cc)
+target_link_libraries(cpp_embedding_lookup embeddings)
+add_test(cpp_embedding_lookup cpp_embedding_lookup)
