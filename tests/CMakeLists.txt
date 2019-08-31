@@ -14,3 +14,9 @@ add_test(embedding_lookup embedding_lookup)
 add_executable(mmap_embeddings mmap_embeddings.c)
 target_link_libraries(mmap_embeddings finalfusion)
 add_test(mmap_embeddings mmap_embeddings)
+
+# Ensure that static linking works
+add_executable(embedding_lookup_static embedding_lookup.c)
+# In the future: collect dynamic library dependencies from Cargo.
+target_link_libraries(embedding_lookup_static finalfusion_static dl m pthread)
+add_test(embedding_lookup_static embedding_lookup_static)
