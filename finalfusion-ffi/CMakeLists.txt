@@ -8,7 +8,8 @@ endif()
 
 file(GLOB_RECURSE LIB_SOURCES "*.rs")
 
-set(SHARED_LIB_FILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_DIR}/libfinalfusion.so")
+set(SHARED_LIB_FILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_DIR}/libfinalfusion${CMAKE_SHARED_LIBRARY_SUFFIX}")
+
 set(STATIC_LIB_FILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_DIR}/libfinalfusion.a")
 
 add_custom_command(
