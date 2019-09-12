@@ -13,6 +13,11 @@ matrix:
   - language: rust
     os: linux
     rust: stable
+  - language: rust
+    os: osx
+    osx_image: xcode10.1
+    rust: stable
+
 before_script:
 - rustup component add clippy
 - rustup component add rustfmt
