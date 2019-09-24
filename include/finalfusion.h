@@ -29,6 +29,31 @@ typedef struct ff_embeddings_t *ff_embeddings;
   ff_embeddings ff_mmap_embeddings(char const *filename);
 
   /**
+   * Read fasttext embeddings. Returns a pointer to the embeddings
+   * when successful or NULL otherwise.
+   */
+
+  ff_embeddings ff_read_fasttext(char const *filename);
+
+  /**
+   * Read embeddings in text dims format. Returns a pointer to the
+   * embeddings when successful or NULL otherwise.
+   */
+  ff_embeddings ff_read_text_dims(char const *filename);
+
+  /**
+   * Read embeddings in text format. Returns a pointer to the
+   * embeddings when successful or NULL otherwise.
+   */
+  ff_embeddings ff_read_text(char const *filename);
+
+  /**
+   * Read word2vec binary embeddings. Returns a pointer to the
+   * embeddings when successful or NULL otherwise.
+   */
+  ff_embeddings ff_read_word2vec(char const *filename);
+
+  /**
    * Free finalfusion embeddings.
    */
   void ff_free_embeddings(ff_embeddings embeddings);

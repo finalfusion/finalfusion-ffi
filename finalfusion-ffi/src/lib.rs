@@ -8,9 +8,10 @@ use std::os::raw::c_char;
 use std::os::unix::ffi::OsStrExt;
 use std::{mem, ptr};
 
+use finalfusion::io as ffio;
 use finalfusion::prelude::*;
 
-macro_rules! check_null(
+macro_rules! check_null (
  ($ptr:expr) => {
     assert!(!$ptr.is_null(), "{} was a NULL pointer.", stringify!($ptr));
  }
@@ -39,7 +40,7 @@ pub unsafe extern "C" fn ff_read_embeddings(
     filename: *const c_char,
 ) -> *mut Embeddings<VocabWrap, StorageWrap> {
     check_null!(filename);
-    read_embeddings(filename, false)
+    read_embeddings_impl::<_, StorageWrap, VocabWrap>(filename, |r| Embeddings::read_embeddings(r))
 }
 
 #[no_mangle]
@@ -47,8 +48,25 @@ pub unsafe extern "C" fn ff_mmap_embeddings(
     filename: *const c_char,
 ) -> *mut Embeddings<VocabWrap, StorageWrap> {
     check_null!(filename);
-    read_embeddings(filename, true)
+    read_embeddings_impl::<_, StorageWrap, VocabWrap>(filename, |r| Embeddings::mmap_embeddings(r))
 }
+
+macro_rules! impl_read_non_fifu (
+    ($name:ident, $method:ident) => {
+        #[no_mangle]
+        pub unsafe extern "C" fn $name(
+            filename: *const c_char,
+        ) -> *mut Embeddings<VocabWrap, StorageWrap> {
+            check_null!(filename);
+            read_embeddings_impl(filename, |r| Embeddings::$method(r))
+        }
+    }
+);
+
+impl_read_non_fifu!(ff_read_fasttext, read_fasttext);
+impl_read_non_fifu!(ff_read_word2vec, read_word2vec_binary);
+impl_read_non_fifu!(ff_read_text, read_text);
+impl_read_non_fifu!(ff_read_text_dims, read_text_dims);
 
 #[no_mangle]
 pub unsafe extern "C" fn ff_free_embeddings(embeddings: *mut Embeddings<VocabWrap, StorageWrap>) {
@@ -89,10 +107,16 @@ pub unsafe extern "C" fn ff_embedding_lookup(
     ptr::null_mut()
 }
 
-unsafe fn read_embeddings(
+unsafe fn read_embeddings_impl<R, S, V>(
     filename: *const c_char,
-    mmap: bool,
-) -> *mut Embeddings<VocabWrap, StorageWrap> {
+    read_embeddings: R,
+) -> *mut Embeddings<VocabWrap, StorageWrap>
+where
+    R: FnOnce(&mut BufReader<File>) -> ffio::Result<Embeddings<V, S>>,
+    S: Storage,
+    V: Vocab,
+    Embeddings<VocabWrap, StorageWrap>: From<Embeddings<V, S>>,
+{
     let filename = CStr::from_ptr(filename);
     let filename = OsStr::from_bytes(filename.to_bytes());
     let mut reader = match File::open(filename) {
@@ -102,13 +126,7 @@ unsafe fn read_embeddings(
             return ptr::null_mut();
         }
     };
-    let embeddings = if mmap {
-        Embeddings::mmap_embeddings(&mut reader)
-    } else {
-        Embeddings::read_embeddings(&mut reader)
-    };
-
-    let embeddings = match embeddings {
+    let embeddings = match read_embeddings(&mut reader) {
         Ok(embeddings) => embeddings,
         Err(err) => {
             update_error(&format!("{}", err));
@@ -117,7 +135,7 @@ unsafe fn read_embeddings(
     };
 
     // Ensure heap storage.
-    let boxed_embeddings = Box::new(embeddings);
+    let boxed_embeddings = Box::new(embeddings.into());
 
     Box::into_raw(boxed_embeddings)
 }
