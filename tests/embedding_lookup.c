@@ -4,7 +4,7 @@
 
 int main() {
   float *embedding;
-  ff_embeddings embeds = ff_read_embeddings("data/test.fifu");
+  ff_embeddings embeds = ff_read_embeddings("testdata/test.fifu");
   if (embeds == NULL) {
     return 1;
   }

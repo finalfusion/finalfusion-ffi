@@ -1,15 +1,13 @@
 #include <stdlib.h>
 
-#include "finalfusion.h"
+#include <finalfusion.h>
 
 int main() {
   float *embedding;
-  ff_embeddings embeds = ff_mmap_embeddings("foo");
-  if (embeds != NULL) {
+  ff_embeddings embeds = ff_read_text("testdata/test.txt");
+  if (embeds == NULL) {
     return 1;
   }
-
-  embeds = ff_mmap_embeddings("testdata/test.fifu");
 
   /* in vocab*/
   embedding = ff_embedding_lookup(embeds, "Berlin");

@@ -9,7 +9,7 @@ name = "finalfusion"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-finalfusion = "0.8"
+finalfusion = "0.10"
 
 [profile.dev]
 panic = "abort"
