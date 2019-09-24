@@ -9,7 +9,7 @@ matrix:
   include:
   - language: rust
     os: linux
-    rust: 1.31.0
+    rust: 1.32.0
   - language: rust
     os: linux
     rust: stable
