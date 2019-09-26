@@ -1,4 +1,5 @@
 pub mod embeddings;
+pub mod vocab;
 
 use std::cell::RefCell;
 use std::ffi::CString;

@@ -77,6 +77,25 @@ typedef struct ff_embeddings_t *ff_embeddings;
    */
   float *ff_embedding_lookup(ff_embeddings embeddings, char const *word);
 
+  /**
+   * Look up the indices of a word.
+   *
+   * Return 0 if the word cannot be looked up and n if it is represented by n indices.
+   *
+   * Returns a buffer holding the indices if a non-null pointer is passed as indices.
+   */
+  int ff_vocab_indices(ff_embeddings embeddings, char const *word, size_t **indices);
+
+  /**
+   * Return the total length of the vocabulary, including potential subword embeddings.
+   */
+  size_t ff_vocab_len(ff_embeddings embeddings);
+
+  /**
+   * Return the number of in-vocabulary words.
+   */
+  size_t ff_words_len(ff_embeddings embeddings);
+
 #ifdef __cplusplus
 }
 #endif
