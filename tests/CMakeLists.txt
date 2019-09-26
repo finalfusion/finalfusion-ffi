@@ -30,6 +30,10 @@ add_executable(write_embeddings write_embeddings.c)
 target_link_libraries(write_embeddings finalfusion)
 add_test(write_embeddings write_embeddings)
 
+add_executable(vocab_test vocab_test.c)
+target_link_libraries(vocab_test finalfusion)
+add_test(vocab_test vocab_test)
+
 # Ensure that static linking works
 add_executable(embedding_lookup_static embedding_lookup.c)
 # In the future: collect dynamic library dependencies from Cargo.
