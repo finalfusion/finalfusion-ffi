@@ -54,6 +54,13 @@ typedef struct ff_embeddings_t *ff_embeddings;
   ff_embeddings ff_read_word2vec(char const *filename);
 
   /**
+   * Write the embeddings to the given path.
+   *
+   * Returns -1 if writing failed, 0 on success.
+   */
+   int ff_write_embeddings(ff_embeddings embeddings, char const *filename);
+
+  /**
    * Free finalfusion embeddings.
    */
   void ff_free_embeddings(ff_embeddings embeddings);
