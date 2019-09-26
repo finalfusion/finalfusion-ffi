@@ -26,6 +26,10 @@ add_executable(textdims_lookup textdims_lookup.c)
 target_link_libraries(textdims_lookup finalfusion)
 add_test(textdims_lookup textdims_lookup)
 
+add_executable(write_embeddings write_embeddings.c)
+target_link_libraries(write_embeddings finalfusion)
+add_test(write_embeddings write_embeddings)
+
 # Ensure that static linking works
 add_executable(embedding_lookup_static embedding_lookup.c)
 # In the future: collect dynamic library dependencies from Cargo.

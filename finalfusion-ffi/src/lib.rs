@@ -3,7 +3,7 @@ use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::OsStr;
 use std::fs::File;
-use std::io::BufReader;
+use std::io::{BufReader, BufWriter};
 use std::os::raw::c_char;
 use std::os::unix::ffi::OsStrExt;
 use std::{mem, ptr};
@@ -72,6 +72,45 @@ impl_read_non_fifu!(ff_read_text_dims, read_text_dims);
 pub unsafe extern "C" fn ff_free_embeddings(embeddings: *mut Embeddings<VocabWrap, StorageWrap>) {
     if !embeddings.is_null() {
         Box::from_raw(embeddings);
+    }
+}
+
+/// Write the embeddings.
+///
+/// Writes the embeddings to the given `filename`.
+///
+/// Returns:
+///  * -1 if the file could not be created or writing failed.
+///  * 0 if the file was written succesfully.
+#[no_mangle]
+pub unsafe extern "C" fn ff_write_embeddings(
+    embeddings: *mut Embeddings<VocabWrap, StorageWrap>,
+    filename: *const c_char,
+) -> isize {
+    check_null!(embeddings);
+    check_null!(filename);
+    let embeddings = &*embeddings;
+    let filename = CStr::from_ptr(filename);
+    let filename = OsStr::from_bytes(filename.to_bytes());
+    let mut writer = match File::create(filename) {
+        Ok(f) => BufWriter::new(f),
+        Err(err) => {
+            update_error(&format!(
+                "Could not open file {:?} for writing: {}",
+                filename, err
+            ));
+            return -1;
+        }
+    };
+    match embeddings.write_embeddings(&mut writer) {
+        Ok(()) => 0,
+        Err(err) => {
+            update_error(&format!(
+                "Could not write embeddings to {:?}: {}",
+                filename, err
+            ));
+            -1
+        }
     }
 }
 
