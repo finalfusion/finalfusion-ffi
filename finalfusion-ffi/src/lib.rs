@@ -4,7 +4,7 @@ use std::ffi::CString;
 use std::ffi::OsStr;
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
-use std::os::raw::c_char;
+use std::os::raw::{c_char, c_int};
 use std::os::unix::ffi::OsStrExt;
 use std::{mem, ptr};
 
@@ -86,7 +86,7 @@ pub unsafe extern "C" fn ff_free_embeddings(embeddings: *mut Embeddings<VocabWra
 pub unsafe extern "C" fn ff_write_embeddings(
     embeddings: *mut Embeddings<VocabWrap, StorageWrap>,
     filename: *const c_char,
-) -> isize {
+) -> c_int {
     check_null!(embeddings);
     check_null!(filename);
     let embeddings = &*embeddings;
