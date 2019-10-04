@@ -10,6 +10,7 @@ crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 finalfusion = "0.10"
+ndarray = "0.12"
 
 [profile.dev]
 panic = "abort"

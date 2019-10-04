@@ -99,6 +99,7 @@ name = "finalfusion-ffi"
 version = "0.1.0"
 dependencies = [
  "finalfusion 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

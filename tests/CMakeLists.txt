@@ -39,3 +39,7 @@ add_executable(embedding_lookup_static embedding_lookup.c)
 # In the future: collect dynamic library dependencies from Cargo.
 target_link_libraries(embedding_lookup_static finalfusion_static dl m pthread)
 add_test(embedding_lookup_static embedding_lookup_static)
+
+add_executable(matrix_copy matrix_copy.c)
+target_link_libraries(matrix_copy finalfusion)
+add_test(matrix_copy matrix_copy)
