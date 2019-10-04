@@ -96,6 +96,18 @@ typedef struct ff_embeddings_t *ff_embeddings;
    */
   size_t ff_words_len(ff_embeddings embeddings);
 
+  /**
+   * Get a copy of the embedding matrix.
+   *
+   * Returns the embedding matrix as a float array.
+   */
+  float *ff_storage_copy(ff_embeddings embeddings);
+
+  /**
+   * Get the number of rows in the embedding matrix.
+   */
+  int ff_storage_rows(ff_embeddings embeddings);
+
 #ifdef __cplusplus
 }
 #endif
