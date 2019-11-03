@@ -6,7 +6,10 @@ use std::os::unix::ffi::OsStrExt;
 use std::{mem, ptr};
 
 use finalfusion::io as ffio;
+use finalfusion::io::WriteEmbeddings;
 use finalfusion::prelude::*;
+use finalfusion::storage::Storage;
+use finalfusion::vocab::Vocab;
 
 use crate::{check_null, update_error};
 

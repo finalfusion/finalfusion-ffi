@@ -2,8 +2,8 @@ use std::ffi::CStr;
 use std::mem;
 use std::os::raw::{c_char, c_int};
 
-use finalfusion::chunks::vocab::WordIndex;
 use finalfusion::prelude::*;
+use finalfusion::vocab::{Vocab, WordIndex};
 
 use crate::check_null;
 

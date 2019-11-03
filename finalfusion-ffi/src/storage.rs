@@ -1,6 +1,7 @@
 use std::mem;
 
 use finalfusion::prelude::*;
+use finalfusion::storage::{Storage, StorageView};
 use ndarray::Array2;
 
 use crate::check_null;
@@ -24,7 +25,7 @@ pub unsafe extern "C" fn ff_storage_copy(
     let embeddings = &*embeddings;
     let array = match embeddings.storage() {
         StorageWrap::MmapArray(mmap) => mmap.view().to_owned(),
-        StorageWrap::NdArray(array) => array.0.clone(),
+        StorageWrap::NdArray(array) => array.view().to_owned(),
         StorageWrap::QuantizedArray(quantized) => copy_storage_to_array(quantized.as_ref()),
         StorageWrap::MmapQuantizedArray(quantized) => copy_storage_to_array(quantized),
     };
@@ -44,7 +45,7 @@ fn copy_storage_to_array(storage: &dyn Storage) -> Array2<f32> {
 
     let mut array = Array2::<f32>::zeros((rows, dims));
     for idx in 0..rows {
-        array.row_mut(idx).assign(&storage.embedding(idx).as_view());
+        array.row_mut(idx).assign(&storage.embedding(idx));
     }
 
     array
